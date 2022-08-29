@@ -1,0 +1,3 @@
+[submodule "miniAVRfreeRTOS"]
+	path = miniAVRfreeRTOS
+	url = git@github.com:tiagolobao/miniAVRfreeRTOS.git
