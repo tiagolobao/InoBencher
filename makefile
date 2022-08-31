@@ -37,6 +37,7 @@ FREERTOS_SRC  :=                       \
 APP_SRC :=                        \
 	$(APP_DIR)/serialGui.c        \
 	$(APP_DIR)/channelInterface.c \
+	$(APP_DIR)/uart.c \
 	app_main.c
 
 SOURCES :=          \

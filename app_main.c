@@ -7,14 +7,17 @@
  * tasks and pre-init commands
  *************************************************************/
 
+
 #include "FreeRTOS.h"
 #include "task.h"
 #include "tasks_cfg.h"
 #include "serialGui.h"
 #include "channelInterface.h"
+#include <avr/io.h>
 
 int main(void)
 {
+
     // Initialize tasks
     xTaskCreate(
         TASKCFG_SERIALGUI_TASKFUNCTION,
@@ -33,4 +36,6 @@ int main(void)
         TASKCFG_CHANNELINTERFACE_PRIORITY,
         TASKCFG_CHANNELINTERFACE_TASKHANDLE
     );
+
+    vTaskStartScheduler();
 }
