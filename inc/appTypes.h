@@ -17,5 +17,4 @@ typedef struct{
     uint32_t taskPeriod; 
 } taskParams;
 
-
 #endif /* APPTYPES_H */

@@ -36,7 +36,7 @@
 #include <util/delay.h>
 #include <avr/interrupt.h>
 
-#define RX_BUFFER_SIZE 128
+#define RX_BUFFER_SIZE 64
 
 /******************************************************
  * @name uart_init

@@ -10,10 +10,12 @@
 #include <avr/io.h>
 #include "FreeRTOS.h"
 #include "task.h"
+#include "timers.h"
 #include "channelInterface.h"
 #include "channels_cfg.h"
 
 #define pcfg portConfigurationArray
+#define BLINK_LED_TIMER_ID 0xA1
 
 //-------------------------------------------------------------------------
 #define set_bit(temp,bit_num) temp |= 1 << bit_num  // setting this bit in the variable temp
@@ -61,12 +63,33 @@ static uint8_t dio_read(uint8_t portId)
 }
 
 //-------------------------------------------------------------------------
+static void blinkBuiltinled( uint16_t period, uint16_t taskPeriod )
+{
+    static uint16_t timerCnt = 0;
+    
+    if( timerCnt > period ){ // 1 second
+        dio_flip(INO_GPIO_13);
+        timerCnt = 0;
+    }
+    timerCnt += taskPeriod;
+}
+
+//-------------------------------------------------------------------------
+uint8_t channelInterface_getLedState(void)
+{
+    return dio_read(INO_GPIO_13);
+}
+
+//-------------------------------------------------------------------------
 void channelInterface_task(void *pvParameters)
 {
     TickType_t xPeriod;
     TickType_t xLastWakeTime;
+    taskParams *args;
+    
+    args = (taskParams*)pvParameters;
 
-    xPeriod = pdMS_TO_TICKS(1000);
+    xPeriod = pdMS_TO_TICKS(args->taskPeriod);
     xLastWakeTime = xTaskGetTickCount();
     
     // sampling in this task should have constant period
@@ -76,6 +99,7 @@ void channelInterface_task(void *pvParameters)
     for(;;)
     {
         vTaskDelayUntil( &xLastWakeTime, xPeriod );
+
         dio_flip(INO_GPIO_13);
     }
 }

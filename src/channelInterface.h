@@ -14,4 +14,6 @@
 
 void channelInterface_task(void *pvParameters);
 
+uint8_t channelInterface_getLedState(void);
+
 #endif /* CHANNELINTERFACE_H */
