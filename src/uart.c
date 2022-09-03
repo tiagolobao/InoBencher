@@ -1,6 +1,6 @@
 /**
  * @file uart.c
- * @brief functions to use UART/Serial comminication
+ * @brief functions to use UART/Serial comminication for atMega328p
 
  * @author Devilbinder (Binder Tronics)
  * Modified by Tiago Lobao
@@ -28,24 +28,33 @@
 #include "FreeRTOS.h"
 #include "uart.h"
 
-#define TX_BUSY 1
-#define TX_NOT_BUSY 0
+// Local Macros
+#define incrementRingBufferIndex(i,max) i++; i = ((i < max)? i : 0)
+#define bufferNotFull(cnt,max) (cnt < max)
 
+// buffers definitions
 volatile static uint8_t rx_buffer[RX_BUFFER_SIZE] = {0};
-volatile static uint16_t rx_count = 0;    
-volatile static uint8_t uart_tx_busy = TX_NOT_BUSY;
+volatile static uint16_t rx_count = 0;
+
+volatile static uint8_t tx_buffer[TX_BUFFER_SIZE] = {0};
+volatile static uint16_t tx_count = 0;
+
+// self check flag
+volatile static bool buffer_full_flag = false;
 
 // ----------------------------------------------------------
 ISR(USART_RX_vect)
 {
-    volatile static uint16_t rx_write_pos;
+    volatile static uint16_t rx_write_pos = 0;
 
     vTaskSuspendAll(); /* critical session start */
-    rx_buffer[rx_write_pos] = UDR0;
-    rx_count++;
-    rx_write_pos++;
-    if(rx_write_pos >= RX_BUFFER_SIZE){
-        rx_write_pos = 0;
+    if( bufferNotFull(rx_count,RX_BUFFER_SIZE) ){
+        rx_buffer[rx_write_pos] = UDR0;
+        rx_count++;
+        incrementRingBufferIndex(rx_write_pos,RX_BUFFER_SIZE);
+    }
+    else{
+        buffer_full_flag = true;
     }
     xTaskResumeAll(); /* critical session end */
 }
@@ -53,9 +62,22 @@ ISR(USART_RX_vect)
 // ----------------------------------------------------------
 ISR(USART_TX_vect)
 {
-    //vTaskSuspendAll(); /* critical session start */
-    uart_tx_busy = TX_NOT_BUSY;
-    //xTaskResumeAll(); /* critical session end */
+    volatile static uint16_t tx_read_pos = 0;
+
+    vTaskSuspendAll(); /* critical session start */
+    switch (tx_count){
+    case 0:
+        break;
+    case 1:
+        tx_count--;
+        break;
+    default: // >1
+        tx_count--;
+        UDR0 = tx_buffer[tx_read_pos];
+        incrementRingBufferIndex(tx_read_pos,TX_BUFFER_SIZE);
+    }
+
+    xTaskResumeAll(); /* critical session end */
 }
 
 // ----------------------------------------------------------
@@ -78,11 +100,26 @@ void uart_init(uint32_t baud,uint8_t high_speed){
 }
 
 // ----------------------------------------------------------
-void uart_send_byte(uint8_t c)
+bool uart_send_byte(uint8_t c)
 {
-    while(TX_BUSY == uart_tx_busy);
-    uart_tx_busy = TX_BUSY;
-    UDR0 = c;
+    volatile static uint16_t tx_write_pos = 0;
+    bool result = true;
+
+    if(tx_count == 0){
+        UDR0 = c;
+        tx_count++;
+    }
+    else if( bufferNotFull(tx_count,TX_BUFFER_SIZE) ){
+        tx_buffer[tx_write_pos] = c;
+        tx_count++;
+        incrementRingBufferIndex(tx_write_pos,TX_BUFFER_SIZE);
+    }
+    else{
+        result = false;
+        buffer_full_flag = true;
+    }
+    
+    return result;
 }
 
 // ----------------------------------------------------------
@@ -117,11 +154,19 @@ uint8_t uart_read(void){
     uint8_t data = 0;
     
     data = rx_buffer[rx_read_pos];
-    rx_read_pos++;
     rx_count--;
-    if(rx_read_pos >= RX_BUFFER_SIZE){
-        rx_read_pos = 0;
-    }
+    incrementRingBufferIndex(rx_read_pos,RX_BUFFER_SIZE);
 
     return data;
+}
+
+// ----------------------------------------------------------
+bool uart_buffer_full_event(void)
+{
+    bool event_happaned;
+
+    event_happaned = buffer_full_flag;
+    buffer_full_flag = 0;
+
+    return event_happaned;
 }

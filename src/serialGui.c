@@ -31,7 +31,7 @@ void serialGui_task(void *pvParameters)
     
     uart_init(BAUD_RATE_UART,HIGH_SPEED_UART);
 
-    uart_send_string("Hello!");    
+    uart_send_string("Hel");    
 
     for(;;)
     {
@@ -47,7 +47,17 @@ void serialGui_task(void *pvParameters)
         if( uart_read_count() > 0 )
         {
             a = uart_read();
-            uart_send_byte(a);
+            if( a == 'z' ){
+                uart_send_string("Hello!");
+            }
+            else{
+                uart_send_byte(a);
+            }
+        }
+
+        if( uart_buffer_full_event() ){
+            while( !uart_send_byte('!') );
+            while( !uart_send_byte('?') );
         }
     }
 }

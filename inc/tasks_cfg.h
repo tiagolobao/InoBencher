@@ -9,7 +9,7 @@
 #include "appTypes.h"
 
 // app config
-#define TASKCFG_SERIALGUI_PERIOD_MS         500u
+#define TASKCFG_SERIALGUI_PERIOD_MS         20u
 const taskParams cArg_serialGui = {
     TASKCFG_SERIALGUI_PERIOD_MS 
 };
@@ -26,7 +26,7 @@ const taskParams cArg_serialGui = {
  * CHANNEL INTERFACE CONFIGURATION
  *********************************/
 //app config
-#define TASKCFG_CHANNELINTERFACE_PERIOD_MS         500u
+#define TASKCFG_CHANNELINTERFACE_PERIOD_MS         10u
 const taskParams cArg_channelInterface = {
     TASKCFG_CHANNELINTERFACE_PERIOD_MS 
 };

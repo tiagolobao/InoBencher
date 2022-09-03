@@ -103,7 +103,7 @@ obj/%.o: %.c
 	$Qmkdir -p $(dir $@)
 	$Q$(CC) $(CFLAGS) -c -o $@ $<
 
-program: $(TARGET)
+program:
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
 
 clean:

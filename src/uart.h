@@ -33,10 +33,12 @@
 #include "task.h"
 #include <stdint.h>
 #include <avr/io.h>
+#include <stdbool.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
 
 #define RX_BUFFER_SIZE 64
+#define TX_BUFFER_SIZE 64
 
 /******************************************************
  * @name uart_init
@@ -58,10 +60,10 @@ void uart_init(uint32_t baud,uint8_t high_speed);
  *
  * @arg uint8_t baud - byte to send
  *
- * @return void
+ * @return bool - if the operation was successful
  *
  *****************************************************/
-void uart_send_byte(uint8_t c);
+bool uart_send_byte(uint8_t c);
 
 /******************************************************
  * @name uart_send_array
@@ -111,5 +113,19 @@ uint16_t uart_read_count(void);
  *
  *****************************************************/
 uint8_t uart_read(void);
+
+/******************************************************
+ * @name uart_buffer_full_event
+ *
+ * @brief check if there was a full buffer event.
+ * If at least once during runtime the buffer got full.
+ * the flag will clear itself after this check
+ *
+ * @arg bool -- true if the event happened
+ *
+ * @return uint8_t
+ *
+ *****************************************************/
+bool uart_buffer_full_event(void);
 
 #endif /* UART_HAL_H_ */
