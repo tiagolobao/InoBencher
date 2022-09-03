@@ -1,6 +1,6 @@
 
 /***************************
- * SERIAL GUI CONFIGURATION
+ * SERIAL UI CONFIGURATION
  ***************************/
 
 #ifndef TASKS_CFG_H
@@ -9,24 +9,24 @@
 #include "appTypes.h"
 
 // app config
-#define TASKCFG_SERIALGUI_PERIOD_MS         20u
-const taskParams cArg_serialGui = {
-    TASKCFG_SERIALGUI_PERIOD_MS 
+#define TASKCFG_SERIALUI_PERIOD_MS         20u
+const taskParams cArg_serialUi = {
+    TASKCFG_SERIALUI_PERIOD_MS 
 };
 
 // os config
-#define TASKCFG_SERIALGUI_STACKSIZE         0x100
-#define TASKCFG_SERIALGUI_TASKFUNCTION      serialGui_task
-#define TASKCFG_SERIALGUI_NAME              "serialGui"
-#define TASKCFG_SERIALGUI_PARAMETERS        (void*)&cArg_serialGui 
-#define TASKCFG_SERIALGUI_PRIORITY          2
-#define TASKCFG_SERIALGUI_TASKHANDLE        NULL    
+#define TASKCFG_SERIALUI_STACKSIZE         0x100
+#define TASKCFG_SERIALUI_TASKFUNCTION      serialUi_task
+#define TASKCFG_SERIALUI_NAME              "serialUI"
+#define TASKCFG_SERIALUI_PARAMETERS        (void*)&cArg_serialUi
+#define TASKCFG_SERIALUI_PRIORITY          2
+#define TASKCFG_SERIALUI_TASKHANDLE        NULL    
 
 /**********************************
  * CHANNEL INTERFACE CONFIGURATION
  *********************************/
 //app config
-#define TASKCFG_CHANNELINTERFACE_PERIOD_MS         10u
+#define TASKCFG_CHANNELINTERFACE_PERIOD_MS         500u
 const taskParams cArg_channelInterface = {
     TASKCFG_CHANNELINTERFACE_PERIOD_MS 
 };

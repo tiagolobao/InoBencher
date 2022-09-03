@@ -11,7 +11,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "tasks_cfg.h"
-#include "serialGui.h"
+#include "serialUi.h"
 #include "channelInterface.h"
 #include <avr/io.h>
 
@@ -20,12 +20,12 @@ int main(void)
 
     // Initialize tasks
     xTaskCreate(
-        TASKCFG_SERIALGUI_TASKFUNCTION,
-        TASKCFG_SERIALGUI_NAME,
-        TASKCFG_SERIALGUI_STACKSIZE,
-        TASKCFG_SERIALGUI_PARAMETERS,
-        TASKCFG_SERIALGUI_PRIORITY,
-        TASKCFG_SERIALGUI_TASKHANDLE
+        TASKCFG_SERIALUI_TASKFUNCTION,
+        TASKCFG_SERIALUI_NAME,
+        TASKCFG_SERIALUI_STACKSIZE,
+        TASKCFG_SERIALUI_PARAMETERS,
+        TASKCFG_SERIALUI_PRIORITY,
+        TASKCFG_SERIALUI_TASKHANDLE
     );
 
     xTaskCreate(

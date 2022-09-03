@@ -12,6 +12,6 @@
 
 #include "appTypes.h"
 
-void serialGui_task(void *pvParameters);
+void serialUi_task(void *pvParameters);
 
 #endif /* SERIALGUI_H */

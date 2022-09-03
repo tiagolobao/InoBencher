@@ -37,8 +37,8 @@
 #include <util/delay.h>
 #include <avr/interrupt.h>
 
-#define RX_BUFFER_SIZE 64
-#define TX_BUFFER_SIZE 64
+#define RX_BUFFER_SIZE 0x20
+#define TX_BUFFER_SIZE 0x100
 
 /******************************************************
  * @name uart_init
@@ -127,5 +127,17 @@ uint8_t uart_read(void);
  *
  *****************************************************/
 bool uart_buffer_full_event(void);
+
+/******************************************************
+ * @name uart_flush
+ *
+ * @brief clear the buffer
+ *
+ * @arg void
+ *
+ * @return void
+ *
+ *****************************************************/
+void uart_flush(void);
 
 #endif /* UART_HAL_H_ */

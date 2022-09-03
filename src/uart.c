@@ -170,3 +170,11 @@ bool uart_buffer_full_event(void)
 
     return event_happaned;
 }
+
+// ----------------------------------------------------------
+void uart_flush(void)
+{
+    while( rx_count > 0){
+        (void)uart_read();
+    }
+}
