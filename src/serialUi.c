@@ -30,16 +30,6 @@ typedef enum{
 #define UI_NO_INPUT 0xFF
 #define MAX_SIZE_COMMAND 32u
 
-// ------ CHARACTER DEFINITIONS ------
-#define ASCII_BEL 0x07
-#define ASCII_BACKSPACE 0x08
-#define ASCII_CR 0x0D
-#define ASCII_SPACE 0x20
-#define ASCII_DEL 0x7F
-#define ASCII_ESCAPE 0x1B
-#define ASCII_VISIBLE_CHAR_MIN 0x21
-#define ASCII_VISIBLE_CHAR_MAX 0x7E
-
 // ------ SEQUENCE DEFINITIONS ------
 #define SEQ_DELCH PSTR("\033[P")  // delete character
 #define SIZE_DELCH    (6u)
@@ -102,38 +92,45 @@ static void printSyncfromPrgMemory(uint16_t id)
     pgmem_size = myPgmspace_getDataSize(myProgmem_startMessage_id);
 
     for( i=0; i<pgmem_size; i++,pgmem_c++ ){
-        uart_send_byte( (uint_fast8_t)myPgmspace_getData(pgmem_c) );
+        addch( (uint_fast8_t)myPgmspace_getData(pgmem_c) );
     }
 }
 
 // ----------------------------------------------------------
 static void printNewLine(void)
 {
-    uart_send_byte('\n');
+    addch('\n');
 #if (IS_CRLF == 1)
-    uart_send_byte('\r');
+    addch('\r');
 #endif
-    uart_send_byte('>');
-    uart_send_byte(' ');
-}
-
-// ----------------------------------------------------------
-static uint8_t isIdleConnection(void)
-{
-    return (uart_read_count() == 0);
+    addch('>');
+    addch(' ');
 }
 
 // ----------------------------------------------------------
 static void processCommand(void)
 {
-    if(strcmp(incommingCommand,"hi") == 0){
-        uart_send_string("\n\rHello :)");
+    if(commandSize == 0){
+        printNewLine();
+    }
+    else if(strcmp(incommingCommand,"hi") == 0){
+        addstr("\n\rHello :)");
         
     }
+    else if(strcmp(incommingCommand,"dbg") == 0){
+        char bffr[50];
+        uint_fast8_t y,x;
+        getyx(y,x);
+        sprintf(bffr,"\n\r%d, %d",x,y);
+        addstr(bffr);
+        getyx(y,x);
+        sprintf(bffr,"\n\r%d, %d",x,y);
+        addstr(bffr);
+    }
     else{
-        uart_send_string("\n\rCommand not recognized");
-        uart_send_string("\n\rit was: ");
-        uart_send_string(incommingCommand);
+        addstr("\n\rCommand not recognized");
+        addstr("\n\rit was: ");
+        addstr(incommingCommand);
     }
     printNewLine();
     clearCommand();
@@ -146,47 +143,35 @@ static void processInput(void)
 
     // The limit of reads per cycle are now defined by RX_BUFFER_SIZE
     // Check uart.h to configure it
-    while( uart_read_count() > 0 )
+    while( isgetavailable() )
     {
-        input = uart_read();
-        if( isVisibleChar(input) )
+        input = getch();
+        switch(input)
         {
-            if( appendToCommand(input) ){
-                uart_send_byte(input);
+        case KEY_BACKSPACE:
+            if( deleteFromCommand() ){
+                uint_fast8_t y,x;
+                getyx(y,x);
+                move(y,(x-1));
+                delch();
             }
             else{
-                uart_send_byte(ASCII_BEL);
+                addch(ASCII_BEL);
             }
-        }
-        else
-        {
-            switch (input){
-                case ASCII_BACKSPACE:
-                    if( deleteFromCommand() )
-                        uart_send_byte(ASCII_DEL);
-                    else
-                        uart_send_byte(ASCII_BEL);
-                    break;
-                case ASCII_CR:
-                    appendToCommand('\0');
-                    uiState = SerialUi_PortConnectedDoCommand;
-                    break;
-                case ASCII_SPACE:
-                    if( appendToCommand(input) ){
-                        uart_send_byte(input);
-                    }
-                    else{
-                        uart_send_byte(ASCII_BEL);
-                    }
-                    break;
-                case ASCII_ESCAPE:
-                    //snprintf( incommingCommand, MAX_SIZE_COMMAND, "received %x \n\r",input );
-                    //uart_send_string(input);
-                    break;
-                default:
-                    // not a valid char!
-                    break;
+            break;
+        
+        case KEY_CR:
+            appendToCommand('\0');
+            uiState = SerialUi_PortConnectedDoCommand;
+            break;
+        default:
+            if( appendToCommand(input) ){
+                addch(input);
             }
+            else{
+                addch(ASCII_BEL);
+            }
+            
         }
     }
 }
@@ -212,7 +197,7 @@ void serialUi_task(void *pvParameters)
         // State machine
         switch(uiState){
         case SerialUi_NoConnection:
-            if( isIdleConnection() ){
+            if( isgetavailable() ){
                 break;
             }
             else{
@@ -223,7 +208,7 @@ void serialUi_task(void *pvParameters)
                     uart_flush();
                 }
                 else{
-                    uart_send_string("curses init error!");
+                    addstr("curses init error!");
                     uiState = SerialUi_NoConnection;
                 }
             }
