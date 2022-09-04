@@ -92,9 +92,18 @@ static void clearCommand(void)
 
 
 // ----------------------------------------------------------
-static void printStart(void)
+static void printSyncfromPrgMemory(uint16_t id)
 {
-    uart_send_string( myPgmspace_getDataPointer(0) );
+    PGM_VOID_P pgmem_c;
+    uint16_t pgmem_size;
+    uint16_t i;
+
+    pgmem_c = myPgmspace_getDataPointer(myProgmem_startMessage_id);
+    pgmem_size = myPgmspace_getDataSize(myProgmem_startMessage_id);
+
+    for( i=0; i<pgmem_size; i++,pgmem_c++ ){
+        uart_send_byte( (uint_fast8_t)myPgmspace_getData(pgmem_c) );
+    }
 }
 
 // ----------------------------------------------------------
@@ -119,14 +128,14 @@ static void processCommand(void)
 {
     if(strcmp(incommingCommand,"hi") == 0){
         uart_send_string("\n\rHello :)");
-        printNewLine();
+        
     }
     else{
         uart_send_string("\n\rCommand not recognized");
         uart_send_string("\n\rit was: ");
         uart_send_string(incommingCommand);
-        printNewLine();
     }
+    printNewLine();
     clearCommand();
 }
 
@@ -209,7 +218,8 @@ void serialUi_task(void *pvParameters)
             else{
                 uiState = SerialUi_PortConnectedListening;
                 if( OK == buffStatus ){
-                    printStart();
+                    printSyncfromPrgMemory(myProgmem_startMessage_id);
+                    printNewLine();
                     uart_flush();
                 }
                 else{

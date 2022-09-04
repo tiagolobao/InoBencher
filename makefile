@@ -88,7 +88,7 @@ CFLAGS += -DF_CPU=$(F_CPU)
 CFLAGS += $(INC_PATH)
 CFLAGS += -O2 -ffunction-sections -fdata-sections -fshort-enums
 CFLAGS += -mrelax -Wall -Wstrict-prototypes
-CFLAGS += -std=gnu11 -Wundef
+CFLAGS += -std=gnu11 -Wundef -Wno-unused
 CFLAGS += -MMD -MP -MF .dep/$(@F).d
 
 LFLAGS  = -mmcu=$(MCU)

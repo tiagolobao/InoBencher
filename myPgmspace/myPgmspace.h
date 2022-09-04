@@ -8,10 +8,15 @@
  * UI and pgmSpace
  *************************************************************/
  
-#ifndef PGMEM_SHARE_H
-#define PGMEM_SHARE_H
+#ifndef PGMEM_H
+#define PGMEM_H
 
-typedef unsigned char* MY_PGM_P;
+#include <avr/pgmspace.h>
+#include "myPgmspaceDefines.h"
+
+#define PGMEM_DATA_START_INDEX 2u
+#define PGMEM_SIZE_INDEX 0u
+
 
 /******************************************************
  * @name myPgmspace_getDataPointer
@@ -20,10 +25,34 @@ typedef unsigned char* MY_PGM_P;
  *
  * @arg uint16_t id - id of the data
  *
- * @return uint8_t pointer
+ * @return PGM_VOID_P pointer
  *
  *****************************************************/
-MY_PGM_P myPgmspace_getDataPointer(uint16_t id);
+PGM_VOID_P myPgmspace_getDataPointer(uint16_t id);
+
+/******************************************************
+ * @name myPgmspace_getDataSize
+ *
+ * @brief retrieve size of the array given the id
+ *
+ * @arg uint16_t id - id of the data
+ *
+ * @return uint16_t size
+ *
+ *****************************************************/
+uint16_t myPgmspace_getDataSize(uint16_t id);
+
+/******************************************************
+ * @name myPgmspace_getData
+ *
+ * @brief retrieve a single byte from the progmem
+ *
+ * @arg uint8_t address - address of the data
+ *
+ * @return uint8_t - the data
+ *
+ *****************************************************/
+uint8_t myPgmspace_getData( PGM_VOID_P address );
 
 /******************************************************
  * @name myPgmspace_copyData
@@ -39,4 +68,4 @@ MY_PGM_P myPgmspace_getDataPointer(uint16_t id);
  *****************************************************/
 uint8_t myPgmspace_copyDataSync(uint16_t id, uint8_t* dest, uint16_t len);
 
-#endif /* PGMEM_SHARE_H */
+#endif /* PGMEM_H */
