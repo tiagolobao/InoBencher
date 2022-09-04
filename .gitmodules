@@ -1,6 +1,6 @@
 [submodule "miniAVRfreeRTOS"]
 	path = miniAVRfreeRTOS
 	url = git@github.com:tiagolobao/miniAVRfreeRTOS.git
-[submodule "dioDriverAtmega328p"]
-	path = dioDriverAtmega328p
-	url = git@github.com:tiagolobao/dioDriverAtmega328p.git
+[submodule "avrcurses"]
+	path = avrcurses
+	url = https://github.com/tiagolobao/avrcurses

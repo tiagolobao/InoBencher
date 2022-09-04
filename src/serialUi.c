@@ -11,25 +11,10 @@
 #include "task.h"
 #include "channelInterface.h"
 #include "serialUi.h"
-#include "uart.h"
+#include "drivers/atmega328p/uart.h"
+#include "src/mcurses.h"
 #include <string.h>
-
-// ------ PROGMEM DEFINITIONS ------
-#include <avr/pgmspace.h>
-
-// big array of strings
-const char string_1[] PROGMEM = "serialUi started!\n\r";
-const char string_2[] PROGMEM = "Welcome to Arduino Bencher\n\r";
-const char string_3[] PROGMEM = "By: Tiago Lobao\n\r";
-const char string_4[] PROGMEM = "> ";
-
-PGM_P const pgmspace_strings[] PROGMEM = 
-{
-    string_1,
-    string_2,
-    string_3,
-    string_4
-};
+#include "myPgmspace.h"
 
 
 // ------ TYPE DEFINITIONS ------
@@ -40,14 +25,13 @@ typedef enum{
 } eSerialUi_state;
 
 // ------ CONST DEFINITIONS ------
-#define HIGH_SPEED_UART 1
-#define BAUD_RATE_UART 115200
 #define IS_CRLF 1
 
 #define UI_NO_INPUT 0xFF
 #define MAX_SIZE_COMMAND 32u
 
 // ------ CHARACTER DEFINITIONS ------
+#define ASCII_BEL 0x07
 #define ASCII_BACKSPACE 0x08
 #define ASCII_CR 0x0D
 #define ASCII_SPACE 0x20
@@ -56,9 +40,16 @@ typedef enum{
 #define ASCII_VISIBLE_CHAR_MIN 0x21
 #define ASCII_VISIBLE_CHAR_MAX 0x7E
 
+// ------ SEQUENCE DEFINITIONS ------
+#define SEQ_DELCH PSTR("\033[P")  // delete character
+#define SIZE_DELCH    (6u)
+
+#define SEQ_CLEAR PSTR("\033[2J")  // clear screen
+#define SIZE_DELCH    (6u) 
+
 
 // ------ LOCAL VARIABLES DEFINITIONS -
-static unsigned char incommingCommand[MAX_SIZE_COMMAND];
+static unsigned char incommingCommand[MAX_SIZE_COMMAND+1];
 static uint8_t commandSize = 0;
 
 static eSerialUi_state uiState = SerialUi_NoConnection;
@@ -69,17 +60,28 @@ static eSerialUi_state uiState = SerialUi_NoConnection;
 // ------ FUNCTIONS -------------------
 
 // ----------------------------------------------------------
-static void appendToCommand(unsigned c)
+static uint8_t appendToCommand(unsigned c)
 {
-    incommingCommand[commandSize] = c;
-    commandSize++;
+    if( commandSize < MAX_SIZE_COMMAND ){
+        incommingCommand[commandSize] = c;
+        commandSize++;
+        return true;
+    }
+    else{
+        return false;
+    }
 }
 
 // ----------------------------------------------------------
-static void deleteFromCommand(void)
+static uint8_t deleteFromCommand(void)
 {
-    if( commandSize>0 )
+    if( commandSize>0 ){
         commandSize--;
+        return true;
+    }
+    else{
+        return false;
+    }
 }
 
 // ----------------------------------------------------------
@@ -92,15 +94,7 @@ static void clearCommand(void)
 // ----------------------------------------------------------
 static void printStart(void)
 {
-    char buffString[32];
-    strcpy_P( buffString, (PGM_P)pgm_read_word(&(pgmspace_strings[0])) );
-    uart_send_string(buffString);
-    strcpy_P( buffString, (PGM_P)pgm_read_word(&(pgmspace_strings[1])) );
-    uart_send_string(buffString);
-    strcpy_P( buffString, (PGM_P)pgm_read_word(&(pgmspace_strings[2])) );
-    uart_send_string(buffString);
-    strcpy_P( buffString, (PGM_P)pgm_read_word(&(pgmspace_strings[3])) );
-    uart_send_string(buffString);
+    uart_send_string( myPgmspace_getDataPointer(0) );
 }
 
 // ----------------------------------------------------------
@@ -141,10 +135,6 @@ static void processInput(void)
 {
     uint8_t input = UI_NO_INPUT;
 
-    // debug from command sessions
-    //snprintf( incommingCommand, MAX_SIZE_COMMAND, "received %x \n\r",input );
-    //uart_send_string(input);
-
     // The limit of reads per cycle are now defined by RX_BUFFER_SIZE
     // Check uart.h to configure it
     while( uart_read_count() > 0 )
@@ -152,28 +142,37 @@ static void processInput(void)
         input = uart_read();
         if( isVisibleChar(input) )
         {
-            appendToCommand(input);
-            uart_send_byte(input);
+            if( appendToCommand(input) ){
+                uart_send_byte(input);
+            }
+            else{
+                uart_send_byte(ASCII_BEL);
+            }
         }
         else
         {
             switch (input){
                 case ASCII_BACKSPACE:
-                    deleteFromCommand();
-                    uart_send_byte(input);
+                    if( deleteFromCommand() )
+                        uart_send_byte(ASCII_DEL);
+                    else
+                        uart_send_byte(ASCII_BEL);
                     break;
                 case ASCII_CR:
+                    appendToCommand('\0');
                     uiState = SerialUi_PortConnectedDoCommand;
                     break;
                 case ASCII_SPACE:
-                    appendToCommand(input);
-                    uart_send_byte(input);
-                    break;
-                case ASCII_DEL:
-                    //not implemented yet
+                    if( appendToCommand(input) ){
+                        uart_send_byte(input);
+                    }
+                    else{
+                        uart_send_byte(ASCII_BEL);
+                    }
                     break;
                 case ASCII_ESCAPE:
-                    //not implemented yet
+                    //snprintf( incommingCommand, MAX_SIZE_COMMAND, "received %x \n\r",input );
+                    //uart_send_string(input);
                     break;
                 default:
                     // not a valid char!
@@ -189,13 +188,14 @@ void serialUi_task(void *pvParameters)
     TickType_t xPeriod;
     TickType_t xLastWakeTime;
     taskParams *args;
-    
+    uint8_t buffStatus;
+
     args = (taskParams*)pvParameters;
 
     xPeriod = pdMS_TO_TICKS(args->taskPeriod);
     xLastWakeTime = xTaskGetTickCount();
     
-    uart_init(BAUD_RATE_UART,HIGH_SPEED_UART);
+    buffStatus = initscr();
 
     for(;;)
     {
@@ -208,8 +208,14 @@ void serialUi_task(void *pvParameters)
             }
             else{
                 uiState = SerialUi_PortConnectedListening;
-                printStart();
-                uart_flush();
+                if( OK == buffStatus ){
+                    printStart();
+                    uart_flush();
+                }
+                else{
+                    uart_send_string("curses init error!");
+                    uiState = SerialUi_NoConnection;
+                }
             }
         case SerialUi_PortConnectedListening:
             processInput();

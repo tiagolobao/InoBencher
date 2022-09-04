@@ -19,7 +19,8 @@ TARGET=InoBencher.hex
 # ---------------------------
 # Source files
 FREERTOS_DIR=miniAVRfreeRTOS
-DIODRV_DIR=dioDriverAtmega328p
+CURSES_DIR=avrcurses
+PGMEMSPACE_DIR=myPgmspace
 APP_DIR=src
 INC_DIR=inc
 
@@ -34,17 +35,31 @@ FREERTOS_SRC  :=                       \
 	$(FREERTOS_DIR)/list.c             \
 	$(FREERTOS_DIR)/tasks.c
 
+CURSES_SRC :=                           \
+	$(CURSES_DIR)/drivers/$(MCU)/uart.c \
+	$(CURSES_DIR)/src/mcurses-config.c  \
+	$(CURSES_DIR)/src/mcurses.c
+
+PGMEMSPACE_SRC := \
+	$(PGMEMSPACE_DIR)/myPgmspace.c
+
 APP_SRC :=                        \
 	$(APP_DIR)/serialUi.c        \
 	$(APP_DIR)/channelInterface.c \
-	$(APP_DIR)/uart.c \
 	app_main.c
 
-SOURCES :=          \
-	$(FREERTOS_SRC) \
-	$(APP_SRC)      \
+SOURCES :=            \
+	$(FREERTOS_SRC)   \
+	$(CURSES_SRC)     \
+	$(PGMEMSPACE_SRC) \
+	$(APP_SRC)        \
 
-INC_PATH=-I$(FREERTOS_DIR) -I$(DIODRV_DIR) -I$(APP_DIR) -I$(INC_DIR)
+INC_PATH=                 \
+	-I$(FREERTOS_DIR)     \
+	-I$(CURSES_DIR)       \
+	-I$(PGMEMSPACE_DIR)   \
+	-I$(APP_DIR)          \
+	-I$(INC_DIR)
 
 # ---------------------------
 # Verbose config
