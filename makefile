@@ -44,8 +44,10 @@ PGMEMSPACE_SRC := \
 	$(PGMEMSPACE_DIR)/myPgmspace.c
 
 APP_SRC :=                        \
-	$(APP_DIR)/serialUi.c        \
+	$(APP_DIR)/commandProcessor.c \
+	$(APP_DIR)/serialUi.c         \
 	$(APP_DIR)/channelInterface.c \
+	$(APP_DIR)/cmdActions.c       \
 	app_main.c
 
 SOURCES :=            \

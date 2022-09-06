@@ -29,7 +29,24 @@ By: Tiago Lobao\n\r\
 '''\
 Hello! I'm the Arduino Bencher!\n\r\
 here are the list of commands you can type:\n\r\
-~~comming soon~~\n\r\
+\n\r\
+hi                                       displays this message\n\r\
+\n\r\
+dio [--flip=<pin>] [--set-high=<pin>]    changes the value of a dio pin\n\r\
+    [--set-low=<pin>] [--show]\n\r\
+\n\r\
+led [--blink] [--clear-error]            changes the state of the builtin led\n\r\
+                                         (used to show system state)\n\r\
+''',
+
+    "cmdResp_dioNotPossible":
+'''\
+error: unknown option for dio command\n\r\
+''',
+
+    "cmdResp_noCommand":
+'''\
+Command not found, try to say "hi" first.\n\r\
 '''
 
 }

@@ -81,6 +81,12 @@ uint8_t channelInterface_getLedState(void)
 }
 
 //-------------------------------------------------------------------------
+void channelInterface_ledFlip(void)
+{
+    return dio_flip(INO_GPIO_13);
+}
+
+//-------------------------------------------------------------------------
 void channelInterface_task(void *pvParameters)
 {
     TickType_t xPeriod;
@@ -100,7 +106,7 @@ void channelInterface_task(void *pvParameters)
     {
         vTaskDelayUntil( &xLastWakeTime, xPeriod );
 
-        dio_flip(INO_GPIO_13);
+        //dio_flip(INO_GPIO_13);
     }
 }
 

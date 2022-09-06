@@ -1,6 +1,8 @@
 [submodule "miniAVRfreeRTOS"]
 	path = miniAVRfreeRTOS
 	url = git@github.com:tiagolobao/miniAVRfreeRTOS.git
+	branch = dependencyVersion_InoBencher
 [submodule "avrcurses"]
 	path = avrcurses
-	url = https://github.com/tiagolobao/avrcurses
+	url = https://github.com/tiagolobao/avrcurses.git
+	branch = avrDevelopMain

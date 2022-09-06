@@ -12,6 +12,11 @@
 
 #include <stdint.h>
 
+typedef enum{
+    eResult_OK,
+    eResult_NOT_OK,
+    eResult_PENDING
+} eResult;
 
 typedef struct{
     uint32_t taskPeriod; 

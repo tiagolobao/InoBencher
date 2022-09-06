@@ -4,7 +4,7 @@
  * @file serialGui.h
  *
  * @brief container with functions related to the user interface
- * GUI (curses) and CLI
+ * UI (curses) and CLI
  *************************************************************/
 
 #ifndef SERIALGUI_H

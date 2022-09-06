@@ -11,6 +11,7 @@
 #ifndef PGMEM_H
 #define PGMEM_H
 
+#include "appTypes.h"
 #include <avr/pgmspace.h>
 #include "myPgmspaceDefines.h"
 
@@ -55,17 +56,28 @@ uint16_t myPgmspace_getDataSize(uint16_t id);
 uint8_t myPgmspace_getData( PGM_VOID_P address );
 
 /******************************************************
- * @name myPgmspace_copyData
+ * @name myPgmspace_printSync
  *
- * @brief copy the data to RAM syncronously
+ * @brief print the string stored in the memspace
  *
  * @arg uint16_t id - id of the data
- *      uint8_t dest - RAM buffer address to copy the data
- *      uint16_t len - size of the buffer
  *
- * @return if operation was successful (buffer is enough)
+ * @return eResult
  *
  *****************************************************/
-uint8_t myPgmspace_copyDataSync(uint16_t id, uint8_t* dest, uint16_t len);
+eResult myPgmspace_printSync(uint16_t id);
+
+/******************************************************
+ * @name myPgmspace_printSync
+ *
+ * @brief print the string stored in the memspace assyncronously
+ * needs to be called returns eResult_OK or eResult_NOT_OK
+ *
+ * @arg uint16_t id - id of the data
+ *
+ * @return eResult
+ *
+ *****************************************************/
+eResult myPgmspace_printAsync(uint16_t id);
 
 #endif /* PGMEM_H */
