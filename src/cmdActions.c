@@ -15,15 +15,24 @@
 
 eResult cmd_hi(void* args);
 eResult cmd_dio(void* args);
+eResult cmd_clear(void* args);
+eResult cmd_default(void* args);
 
 const actionNode actionsTable[CMD_NUMBER_OF_ACTIONS] = {
+    {"", cmd_default},
     {"hi", cmd_hi},
-    {"dio", cmd_dio}
+    {"dio", cmd_dio},
+    {"clear", cmd_clear}
 };
+
+eResult cmd_default(void* args)
+{
+    return myPgmspace_printSync(myProgmem_cmdResp_noCommand_id);
+}
 
 eResult cmd_hi(void* args)
 {
-    return myPgmspace_printSync(myProgmem_cmdResp_hello_id);
+    return myPgmspace_printAsync(myProgmem_cmdResp_hello_id);
 }
 
 eResult cmd_dio(void* args)
@@ -34,4 +43,11 @@ eResult cmd_dio(void* args)
         myPgmspace_printSync(myProgmem_cmdResp_dioNotPossible_id);
     }
     return 0;
+}
+
+eResult cmd_clear(void* args)
+{
+    clear();
+    move(0,0);
+    return eResult_OK;
 }

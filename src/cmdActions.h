@@ -15,5 +15,7 @@ typedef struct{
     actionCallback cb;
 } actionNode;
 
-#define CMD_NUMBER_OF_ACTIONS 2
+#define CMD_NUMBER_OF_ACTIONS 4
+#define CMD_ACTION_ID_DEFAULT 0
+
 extern const actionNode actionsTable[CMD_NUMBER_OF_ACTIONS];

@@ -53,8 +53,11 @@ static void triggerCommand(void)
     eResult r;
 
     r = commandProcessor_commandRun();
-    if( r == eResult_OK )
+    if( r != eResult_PENDING ){
         uiState = SerialUi_PortConnectedListening;   
+        commandProcessor_clear();
+        printNewLineCommand();
+    }
     // else keep running the action
 }
 
@@ -64,17 +67,11 @@ static void parseCommand(void)
     printNewLine();
 
     if( eResult_NOT_OK == commandProcessor_parse() ){
-        myPgmspace_printSync(myProgmem_cmdResp_noCommand_id);
-        addstr("~~");
         uiState = SerialUi_PortConnectedListening;   
     }
     else{
         uiState = SerialUi_commandOngoing;
-    }
-
-    commandProcessor_clear();
-    printNewLineCommand();
-    
+    }    
 }
 
 // ----------------------------------------------------------

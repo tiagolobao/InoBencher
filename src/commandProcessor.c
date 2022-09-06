@@ -14,9 +14,9 @@
 #include "myPgmspace.h"
 
 static char incommingCommand[MAX_SIZE_COMMAND+1];
-static uint8_t commandSize = 0;
+static uint8_t commandSize = 0u;
 
-actionCallback onGoingCommand = 0;
+actionCallback onGoingCommand = NULL;
 
 /* ------------------------------------------------------- */
 /*                  LOCAL FUNCTIONS                       */
@@ -61,7 +61,7 @@ eResult commandProcessor_parse(void)
 {
     uint8_t i,j;
     // Linear search, do binary in the future
-    for( i=0; i<CMD_NUMBER_OF_ACTIONS; i++ ){
+    for( i=1; i<CMD_NUMBER_OF_ACTIONS; i++ ){
         // Compare strings
         for( j=0; j<commandSize; j++ ){
             if( actionsTable[i].cmdName[j] != incommingCommand[j] )
@@ -74,13 +74,15 @@ eResult commandProcessor_parse(void)
         }
     }
     // no such command
-    return eResult_NOT_OK;
+    onGoingCommand = actionsTable[CMD_ACTION_ID_DEFAULT].cb;
+
+    return eResult_OK;
 }
 
 eResult commandProcessor_commandRun(void)
 {
-    if( onGoingCommand == 0 )
+    if( onGoingCommand == NULL )
         return eResult_NOT_OK;
     else
-        return onGoingCommand(0);
+        return onGoingCommand(NULL);
 }
