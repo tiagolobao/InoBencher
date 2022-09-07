@@ -65,15 +65,17 @@ eResult myPgmspace_printAsync(uint16_t id)
     static uint16_t pgmem_size;
     static uint16_t lastId = NO_LAST_ID;
 
-    if( NO_LAST_ID == lastId && lastId != id ){
-        if( lastId != id ) // not expected ID
-            return eResult_NOT_OK;
+    if( NO_LAST_ID == lastId ){
         // Initialize the variables
         lastId = id;
         i = 0;
         pgmem_c = myPgmspace_getDataPointer(id);
         pgmem_size = myPgmspace_getDataSize(id);
     }
+
+    // not expected ID
+    if( lastId != id ) 
+        return eResult_NOT_OK;
 
     // read array in the progmeme
     for( ; i<pgmem_size && isaddavailable(); i++,pgmem_c++ ){
