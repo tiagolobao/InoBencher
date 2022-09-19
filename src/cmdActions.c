@@ -17,17 +17,26 @@ eResult cmd_hi(void* args);
 eResult cmd_dio(void* args);
 eResult cmd_clear(void* args);
 eResult cmd_default(void* args);
+eResult cmd_echo(void* args);
 
 const actionNode actionsTable[CMD_NUMBER_OF_ACTIONS] = {
+    /* vv don't change defaults position vv*/
     {"", cmd_default},
+    /* ^^ don't change defaults position ^^ */
     {"hi", cmd_hi},
     {"dio", cmd_dio},
+    {"echo", cmd_echo},
     {"clear", cmd_clear}
 };
 
+eResult cmd_echo(void* args)
+{   
+    return eResult_OK;
+}
+
 eResult cmd_default(void* args)
 {
-    return myPgmspace_printSync(myProgmem_cmdResp_noCommand_id);
+    return myPgmspace_printAsync(myProgmem_cmdResp_noCommand_id);
 }
 
 eResult cmd_hi(void* args)
@@ -40,7 +49,7 @@ eResult cmd_dio(void* args)
     eResult result = eResult_NOT_OK;
     channelInterface_ledFlip();
     if(result == eResult_NOT_OK){
-        myPgmspace_printSync(myProgmem_cmdResp_dioNotPossible_id);
+        myPgmspace_printAsync(myProgmem_cmdResp_dioNotPossible_id);
     }
     return 0;
 }

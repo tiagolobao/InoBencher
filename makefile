@@ -9,6 +9,7 @@ MCU=atmega328p
 F_CPU=16000000UL
 
 # ---------------------------
+# Used softwares
 CC=avr-gcc
 AVRDUDE=avrdude
 
@@ -21,6 +22,7 @@ TARGET=InoBencher.hex
 FREERTOS_DIR=miniAVRfreeRTOS
 CURSES_DIR=avrcurses
 PGMEMSPACE_DIR=myPgmspace
+LINKEDLIST_DIR=heaplessLinkedList
 APP_DIR=src
 INC_DIR=inc
 
@@ -43,6 +45,10 @@ CURSES_SRC :=                           \
 PGMEMSPACE_SRC := \
 	$(PGMEMSPACE_DIR)/myPgmspace.c
 
+LINKEDLIST_SRC := \
+	$(LINKEDLIST_DIR)/src/ringBuffer.c         \
+	$(LINKEDLIST_DIR)/src/heaplessLinkedList.c
+
 APP_SRC :=                        \
 	$(APP_DIR)/commandProcessor.c \
 	$(APP_DIR)/serialUi.c         \
@@ -54,13 +60,15 @@ SOURCES :=            \
 	$(FREERTOS_SRC)   \
 	$(CURSES_SRC)     \
 	$(PGMEMSPACE_SRC) \
+	$(LINKEDLIST_SRC) \
 	$(APP_SRC)        \
 
-INC_PATH=                 \
-	-I$(FREERTOS_DIR)     \
-	-I$(CURSES_DIR)       \
-	-I$(PGMEMSPACE_DIR)   \
-	-I$(APP_DIR)          \
+INC_PATH=                   \
+	-I$(FREERTOS_DIR)       \
+	-I$(CURSES_DIR)         \
+	-I$(PGMEMSPACE_DIR)     \
+	-I$(LINKEDLIST_DIR)/inc \
+	-I$(APP_DIR)            \
 	-I$(INC_DIR)
 
 # ---------------------------

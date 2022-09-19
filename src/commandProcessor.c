@@ -10,65 +10,74 @@
 #include "appTypes.h"
 #include "commandProcessor.h"
 #include "cmdActions.h"
-#include "src/mcurses.h"
 #include "myPgmspace.h"
+#include "heaplessLinkedList.h"
 
-static char incommingCommand[MAX_SIZE_COMMAND+1];
-static uint8_t commandSize = 0u;
+// chars ASCII
+#define ASCII_SPACE ' '
+#define ASCII_STR_END '\0'
 
-actionCallback onGoingCommand = NULL;
+// limitation due to atmega small ram size
+#define MAX_SIZE_COMMAND 50
+//#define MAX_NUMBER_OF_ARGS 8
+
+// do not operate those directly
+static tIndex __ringBufferArray__[MAX_SIZE_COMMAND];
+static heaplessListNode __heapArray__[MAX_SIZE_COMMAND];
+
+// internal variables
+static heaplessList incommingCommand;
+static actionCallback onGoingCommand = NULL;
 
 /* ------------------------------------------------------- */
-/*                  LOCAL FUNCTIONS                       */
+/*                  LOCAL FUNCTIONS - Linked list          */
 /* ------------------------------------------------------- */
+
+
 
 /* ------------------------------------------------------- */
 /*                  EXPORTED FUNCTIONS                     */
 /* ------------------------------------------------------- */
 
+void commandProcessor_Init(void)
+{
+    heaplessList_init(&incommingCommand, __ringBufferArray__, __heapArray__, MAX_SIZE_COMMAND);
+}
 // ----------------------------------------------------------
 uint8_t commandProcessor_append(char c)
 {
-    if( commandSize < MAX_SIZE_COMMAND ){
-        incommingCommand[commandSize] = c;
-        commandSize++;
-        return true;
-    }
-    else{
-        return false;
-    }
+    return heaplessList_append(&incommingCommand, c);
 }
 
 // ----------------------------------------------------------
 uint8_t commandProcessor_remove(void)
 {
-    if( commandSize>0 ){
-        commandSize--;
-        return true;
-    }
-    else{
-        return false;
-    }
+    return heaplessList_removeLast(&incommingCommand);
 }
 
 // ----------------------------------------------------------
 void commandProcessor_clear(void)
 {
-    commandSize=0;
+    while(heaplessList_removeFirst(&incommingCommand));
 }
 
 eResult commandProcessor_parse(void)
 {
     uint8_t i,j;
+    heaplessListNode *it;
     // Linear search, do binary in the future
     for( i=1; i<CMD_NUMBER_OF_ACTIONS; i++ ){
-        // Compare strings
-        for( j=0; j<commandSize; j++ ){
-            if( actionsTable[i].cmdName[j] != incommingCommand[j] )
+        // Compare command strings
+        j=0;
+        it = heaplessList_initIt(&incommingCommand);
+        while( actionsTable[i].cmdName[j] != ASCII_STR_END ){
+            if( actionsTable[i].cmdName[j] != heaplessList_getItData(it) )
                 break;
+            j++;
+            heaplessList_nextIt(&incommingCommand,&it);
         }
-        if( j == commandSize ){
-            //command found!
+        if( actionsTable[i].cmdName[j] == ASCII_STR_END){
+            //command found! Parse arguments
             onGoingCommand = actionsTable[i].cb;
             return eResult_OK;
         }
@@ -79,6 +88,7 @@ eResult commandProcessor_parse(void)
     return eResult_OK;
 }
 
+// ----------------------------------------------------------
 eResult commandProcessor_commandRun(void)
 {
     if( onGoingCommand == NULL )

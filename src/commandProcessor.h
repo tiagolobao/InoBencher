@@ -6,10 +6,24 @@
  * @brief container to manipulate the storage of commands
  *************************************************************/
 
+#ifndef COMMANDPROCESSOR_H
+#define COMMANDPROCESSOR_H
+
 #include <stdbool.h>
 #include "FreeRTOS.h"
 
-#define MAX_SIZE_COMMAND 32u
+/******************************************************
+ * @name commandProcessor_Init
+ *
+ * @brief append char to current command
+ *
+ * @arg uint32_t baud - baud rate (9600u..115200u)
+ *      uint8_t high_speed (1 means high speed)
+ *
+ * @return void
+ *
+ *****************************************************/
+void commandProcessor_Init(void);
 
 /******************************************************
  * @name commandProcessor_append
@@ -75,3 +89,5 @@ uint8_t commandProcessor_parse(void);
  *
  *****************************************************/
 eResult commandProcessor_commandRun(void);
+
+#endif /* COMMANDPROCESSOR_H */

@@ -11,6 +11,7 @@
 #define APPTYPES_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef enum{
     eResult_OK,

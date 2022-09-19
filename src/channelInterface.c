@@ -106,7 +106,7 @@ void channelInterface_task(void *pvParameters)
     {
         vTaskDelayUntil( &xLastWakeTime, xPeriod );
 
-        //dio_flip(INO_GPIO_13);
+        dio_flip(INO_GPIO_13);
     }
 }
 

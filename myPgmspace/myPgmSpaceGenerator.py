@@ -20,7 +20,7 @@ myDict = {
     
     "startMessage": 
 '''\
-serialUi started!\n\r\
+......serialUi started!\n\r\
 Welcome to Arduino Bencher\n\r\
 By: Tiago Lobao\n\r\
 ''',

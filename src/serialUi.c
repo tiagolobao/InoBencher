@@ -135,12 +135,15 @@ static void inputListen(void)
 // ----------------------------------------------------------
 static void idleUi(void)
 {
-    
+    eResult r;
     if( isgetavailable() ){
-        myPgmspace_printSync(myProgmem_startMessage_id);
-        refresh();
-        printNewLineCommand();
-        uiState = SerialUi_PortConnectedListening;
+        r = myPgmspace_printAsync(myProgmem_startMessage_id);
+        if( r == eResult_OK ){
+            refresh();
+            printNewLineCommand();
+            commandProcessor_Init();
+            uiState = SerialUi_PortConnectedListening;
+        }
     }
 }
 
