@@ -8,7 +8,7 @@
 
 #include "appTypes.h"
 
-typedef eResult (*actionCallback)(void* args);
+typedef eResult (*actionCallback)(void);
 
 typedef struct{
     char* cmdName;

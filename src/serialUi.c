@@ -137,9 +137,13 @@ static void idleUi(void)
 {
     eResult r;
     if( isgetavailable() ){
+        clear();
+        move(0,0);
+        vTaskDelay( (TickType_t) pdMS_TO_TICKS(50) );
         r = myPgmspace_printAsync(myProgmem_startMessage_id);
         if( r == eResult_OK ){
             refresh();
+            vTaskDelay( (TickType_t) pdMS_TO_TICKS(10) );
             printNewLineCommand();
             commandProcessor_Init();
             uiState = SerialUi_PortConnectedListening;
