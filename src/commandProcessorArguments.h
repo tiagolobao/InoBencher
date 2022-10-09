@@ -13,12 +13,12 @@
 /******************************************************
  * @name commandProcessor_getArg_d
  *
- * @brief initializes the Serial communication
+ * @brief get argument in form of a decimal number
  *
- * @arg uint32_t baud - baud rate (9600u..115200u)
- *      uint8_t high_speed (1 means high speed)
+ * @arg uint8_t p - position of the argument
+ *      int* output 
  *
- * @return void
+ * @return eResult - if the argument was properly written
  *
  *****************************************************/
 eResult commandProcessor_getArg_d(const uint8_t p, int *d);
@@ -26,12 +26,13 @@ eResult commandProcessor_getArg_d(const uint8_t p, int *d);
 /******************************************************
  * @name commandProcessor_getArg_d
  *
- * @brief initializes the Serial communication
+ * @brief get argument in form of a string
  *
- * @arg uint32_t baud - baud rate (9600u..115200u)
- *      uint8_t high_speed (1 means high speed)
+ * @arg uint8_t p - position of the argument
+ *      char* s - string output
+ *      uint8_t len - max lenght of the output string
  *
- * @return void
+ * @return eResult - if the argument was properly written
  *
  *****************************************************/
 eResult commandProcessor_getArg_s(const uint8_t p, char *s, const uint8_t len);
@@ -39,12 +40,13 @@ eResult commandProcessor_getArg_s(const uint8_t p, char *s, const uint8_t len);
 /******************************************************
  * @name commandProcessor_getArg_d
  *
- * @brief initializes the Serial communication
+ * @brief compares argument with a predefined string
  *
- * @arg uint32_t baud - baud rate (9600u..115200u)
- *      uint8_t high_speed (1 means high speed)
+ * @arg uint8_t p - position of the argument
+ *      char* s - string to be compared
  *
- * @return void
+ * @return eResult - if the argument matches the string it will return eResult_OK
+ * it will return eResult_NOT_OK otherwise
  *
  *****************************************************/
 eResult commandProcessor_compArg_s(const uint8_t p, const char *s);

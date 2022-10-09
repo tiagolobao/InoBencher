@@ -15,10 +15,9 @@
 /******************************************************
  * @name commandProcessor_Init
  *
- * @brief append char to current command
+ * @brief initialize variables inside command processor
  *
- * @arg uint32_t baud - baud rate (9600u..115200u)
- *      uint8_t high_speed (1 means high speed)
+ * @arg void
  *
  * @return void
  *
@@ -30,10 +29,9 @@ void commandProcessor_Init(void);
  *
  * @brief append char to current command
  *
- * @arg uint32_t baud - baud rate (9600u..115200u)
- *      uint8_t high_speed (1 means high speed)
+ * @arg char c - character to be appended
  *
- * @return void
+ * @return boolean in uint8_t type to declare if operation was ok
  *
  *****************************************************/
 uint8_t commandProcessor_append(char c);
@@ -41,12 +39,11 @@ uint8_t commandProcessor_append(char c);
 /******************************************************
  * @name commandProcessor_remove
  *
- * @brief delete
+ * @brief delete char from current command
  *
- * @arg uint32_t baud - baud rate (9600u..115200u)
- *      uint8_t high_speed (1 means high speed)
+ * @arg void
  *
- * @return void
+ * @return boolean in uint8_t type to declare if operation was ok
  *
  *****************************************************/
 uint8_t commandProcessor_remove(void);
@@ -54,10 +51,9 @@ uint8_t commandProcessor_remove(void);
 /******************************************************
  * @name commandProcessor_clear
  *
- * @brief initializes the Serial communication
+ * @brief clear all variables related to the incomming command
  *
- * @arg uint32_t baud - baud rate (9600u..115200u)
- *      uint8_t high_speed (1 means high speed)
+ * @arg void
  *
  * @return void
  *
@@ -67,25 +63,25 @@ void commandProcessor_clear(void);
 /******************************************************
  * @name commandProcessor_parse
  *
- * @brief initializes the Serial communication
+ * @brief parses the written command
  *
- * @arg uint32_t baud - baud rate (9600u..115200u)
- *      uint8_t high_speed (1 means high speed)
+ * @arg void
  *
- * @return void
+ * @return eResult telling if the command was properly written
  *
  *****************************************************/
-uint8_t commandProcessor_parse(void);
+eResult commandProcessor_parse(void);
 
 /******************************************************
  * @name commandProcessor_commandRun
  *
- * @brief initializes the Serial communication
+ * @brief runs the command. (parse should be called first)
  *
- * @arg uint32_t baud - baud rate (9600u..115200u)
- *      uint8_t high_speed (1 means high speed)
+ * @arg void
  *
- * @return void
+ * @return eResult 
+ *  PENDING - this function should be called again in order to finish the command
+ *  OK or NOK - command finished
  *
  *****************************************************/
 eResult commandProcessor_commandRun(void);
