@@ -19,6 +19,18 @@ typedef enum{
     eResult_PENDING
 } eResult;
 
+#define DIO_ACTION_WRITE 1
+#define DIO_ACTION_READ 2
+#define DIO_LEVEL_LOW 0
+#define DIO_LEVEL_HIGH 1
+#define DIO_LEVEL_INVALID 3
+
+typedef struct{
+    uint8_t action;
+    uint8_t gpioId;
+    uint8_t level;
+} dioMsgType;
+
 typedef struct{
     uint32_t taskPeriod; 
 } taskParams;

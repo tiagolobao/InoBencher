@@ -16,5 +16,6 @@ void channelInterface_task(void *pvParameters);
 
 uint8_t channelInterface_getLedState(void);
 void channelInterface_ledFlip(void);
+eResult channelInterface_receiveDioMessage(dioMsgType *dioMsg);
 
 #endif /* CHANNELINTERFACE_H */

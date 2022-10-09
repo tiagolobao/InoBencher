@@ -30,18 +30,25 @@ myDict = {
 Hello! I'm the Arduino Bencher!\n\r\
 here are the list of commands you can type:\n\r\
 \n\r\
-hi                                       displays this message\n\r\
+hi                     displays this message\n\r\
 \n\r\
-dio [--flip=<pin>] [--set-high=<pin>]    changes the value of a dio pin\n\r\
-    [--set-low=<pin>] [--show]\n\r\
+dio :action :gpioId    operates the digital IO pins\n\r\
+    [:level] \n\r\
 \n\r\
-led [--blink] [--clear-error]            changes the state of the builtin led\n\r\
-                                         (used to show system state)\n\r\
+clear                  clears the console\n\r\
+\n\r\
+echo :string           prints a string in the console\n\r\
+\n\r\
 ''',
 
     "cmdResp_dioNotPossible":
 '''\
-error: unknown option for dio command\n\r\
+dio: unknown option for dio command\n\r\
+''',
+
+    "cmdResp_dioReadResponse":
+'''\
+dio: pin current status is =>  \
 ''',
 
     "cmdResp_noCommand":

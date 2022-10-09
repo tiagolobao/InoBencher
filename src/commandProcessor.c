@@ -109,7 +109,7 @@ eResult commandProcessor_parse(void)
                 heaplessList_nextIt(&incommingCommand,&it);
             }
             onGoingCommand = actionsTable[i].cb;
-            
+
             return eResult_OK;
         }
     }
@@ -139,14 +139,15 @@ eResult commandProcessor_getArg_d(const uint8_t p, int *d)
     if( p >= argCount )
         return eResult_NOT_OK;
     
-    while( it != NULL && cnt < MAX_SIZE_OF_NUMBER_ARG && heaplessList_getItData(it) != ASCII_SPACE ){
+    c = heaplessList_getItData(it);
+    while( it != NULL && cnt < MAX_SIZE_OF_NUMBER_ARG && c != ASCII_SPACE && c != ASCII_STR_END ){
 
-        c = heaplessList_getItData(it);
         if( c < ASCII_MIN_NUMERAL || c > ASCII_MAX_NUMERAL )
             return eResult_NOT_OK;
 
         s[cnt] = c;
         heaplessList_nextIt(&incommingCommand, &it);
+        c = heaplessList_getItData(it);
         cnt++;
     } 
     
@@ -162,20 +163,49 @@ eResult commandProcessor_getArg_s(const uint8_t p, char *s, const uint8_t len)
 {
     heaplessListNode* it;
     uint8_t cnt = 0;
+    char c;
 
     if( p >= argCount )
         return eResult_NOT_OK;
 
     it = argStartNodes[p];
-    while( it != NULL && heaplessList_getItData(it) != ASCII_SPACE ){
+
+    c = heaplessList_getItData(it);
+    while( it != NULL && c != ASCII_SPACE && c != ASCII_STR_END ){
 
         if( cnt >= len )
             return eResult_NOT_OK;
+        
+        s[cnt] = c;
 
-        s[cnt] = heaplessList_getItData(it);
+        heaplessList_nextIt(&incommingCommand,&it);
+        c = heaplessList_getItData(it);
+        cnt++;
+    }
+    s[cnt] = ASCII_STR_END;
+
+    return eResult_OK;
+}
+
+// ----------------------------------------------------------
+eResult commandProcessor_compArg_s(const uint8_t p, const char *s)
+{
+    heaplessListNode* it;
+    uint8_t cnt = 0;
+    eResult res = eResult_OK;
+
+    if( p >= argCount )
+        return eResult_NOT_OK;
+
+    it = argStartNodes[p];
+    while( it != NULL && heaplessList_getItData(it) != ASCII_SPACE && s[cnt] != ASCII_STR_END ){
+        if( heaplessList_getItData(it) != s[cnt] ){
+            res = eResult_NOT_OK;
+            break;
+        }
         heaplessList_nextIt(&incommingCommand,&it);
         cnt++;
     }
 
-    return eResult_OK;
+    return res;
 }

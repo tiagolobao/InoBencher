@@ -9,10 +9,11 @@
 
 #include <avr/io.h>
 #include "FreeRTOS.h"
+#include "appTypes.h"
 #include "task.h"
-#include "timers.h"
 #include "channelInterface.h"
 #include "channels_cfg.h"
+#include "src/mcurses.h"
 
 #define pcfg portConfigurationArray
 #define BLINK_LED_TIMER_ID 0xA1
@@ -59,7 +60,9 @@ static void dio_flip(uint8_t portId)
 //-------------------------------------------------------------------------
 static uint8_t dio_read(uint8_t portId)
 {
-    return get_bit( *(pcfg[portId].portIoReg) ,pcfg[portId].gpio_bit );
+    uint8_t l;
+    l = get_bit( *(pcfg[portId].portIoReg) ,pcfg[portId].gpio_bit );
+    return (l >> pcfg[portId].gpio_bit);
 }
 
 //-------------------------------------------------------------------------
@@ -87,6 +90,25 @@ void channelInterface_ledFlip(void)
 }
 
 //-------------------------------------------------------------------------
+eResult channelInterface_receiveDioMessage(dioMsgType *dioMsg)
+{
+
+    if( NOT_GPIO == pcfg[dioMsg->gpioId].initialportMode || dioMsg->gpioId >= NUMBER_OF_GIPO )
+        return eResult_NOT_OK; // invalid command
+
+    switch(dioMsg->action){
+    case DIO_ACTION_WRITE:
+        dio_write(dioMsg->gpioId, dioMsg->level);
+        break;
+    case DIO_ACTION_READ:
+        dioMsg->level = dio_read(dioMsg->gpioId);
+        break;
+    }
+
+    return eResult_OK;
+}
+
+//-------------------------------------------------------------------------
 void channelInterface_task(void *pvParameters)
 {
     TickType_t xPeriod;
@@ -105,7 +127,7 @@ void channelInterface_task(void *pvParameters)
     for(;;)
     {
         vTaskDelayUntil( &xLastWakeTime, xPeriod );
-
+        // Blink led! I'm alive!
         dio_flip(INO_GPIO_13);
     }
 }
