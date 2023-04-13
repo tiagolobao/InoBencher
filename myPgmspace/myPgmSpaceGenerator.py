@@ -56,21 +56,6 @@ dio: pin current status is =>  \
 Command not found, try to say "hi" first.\n\r\
 ''',
 
-    "cmdResp_vjError":
-'''\
-vj(rsa1025_bench): argument error!\n\r\
-''',
-
-    "cmdResp_vjPending":
-'''\
-vj(rsa1025_bench): pending...\n\r\
-''',
-
-    "cmdResp_vjDone":
-'''\
-vj(rsa1025_bench): done!.\n\r\
-'''
-
 }
 
 
