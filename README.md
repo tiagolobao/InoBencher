@@ -1,2 +1,2 @@
 # InoBencher
-Control All GPIO/ADC from an arduino board remotely
+Control All GPIO from an arduino board remotely. For now it was used only to control a relay board.
